@@ -21,10 +21,6 @@ const errorHandler = (error, req, res, next) => {
     message,
   };
 
-  if (process.env.NODE_ENV !== 'production' && error.stack) {
-    response.stack = error.stack;
-  }
-
   res.status(statusCode).json(response);
 };
 
