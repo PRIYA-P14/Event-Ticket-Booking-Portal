@@ -8,6 +8,7 @@ const morgan = require('morgan');
 const connectDB = require('./config/db');
 const { notFound, errorHandler } = require('./middleware/errorMiddleware');
 const authRoutes = require('./routes/authRoutes');
+const bookingRoutes = require('./routes/bookingRoutes');
 const eventRoutes = require('./routes/eventRoutes');
 const testRoutes = require('./routes/testRoutes');
 
@@ -25,6 +26,7 @@ app.get('/api/v1/health', (req, res) => {
 
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/events', eventRoutes);
+app.use('/api/v1/bookings', bookingRoutes);
 if (process.env.NODE_ENV !== 'production') {
   app.use('/api/v1/test', testRoutes);
 }
