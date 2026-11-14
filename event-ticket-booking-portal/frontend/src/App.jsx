@@ -1,121 +1,163 @@
-import { useState } from 'react'
-import heroImg from './assets/hero.png'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
+import { useEffect, useState } from 'react'
+import { ArrowRight, CalendarDays, Ticket, Users } from 'lucide-react'
+import { BrowserRouter, Link, Route, Routes } from 'react-router-dom'
+import EventCard from './components/EventCard'
+import { AuthProvider } from './context/AuthContext.jsx'
+import { useAuth } from './context/authContext'
+import { rolePath } from './context/routeUtils'
+import { ProtectedRoute } from './components/ProtectedRoute'
+import BookingPreparationPage from './pages/BookingPreparationPage'
+import EventDetailsPage from './pages/EventDetailsPage'
+import EventsPage from './pages/EventsPage'
+import LoginPage from './pages/LoginPage'
+import PendingBookingPage from './pages/PendingBookingPage'
+import RegisterPage from './pages/RegisterPage'
+import RolePlaceholderPage from './pages/RolePlaceholderPage'
+import { getUpcomingEvents } from './lib/eventApi'
 import './App.css'
 
-function App() {
-  const [count, setCount] = useState(0)
+function LandingPage() {
+  const { isAuthenticated, user, signOut } = useAuth()
+  const [events, setEvents] = useState([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState('')
+
+  useEffect(() => {
+    let isMounted = true
+
+    getUpcomingEvents()
+      .then((upcomingEvents) => {
+        if (isMounted) setEvents(upcomingEvents)
+      })
+      .catch((requestError) => {
+        if (isMounted) {
+          setError(requestError.response?.data?.message || 'We could not load upcoming events.')
+        }
+      })
+      .finally(() => {
+        if (isMounted) setIsLoading(false)
+      })
+
+    return () => {
+      isMounted = false
+    }
+  }, [])
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+    <div className="portal-shell">
+      <header className="site-header">
+        <a className="brand" href="/" aria-label="Eventra home">
+          <span className="brand__mark">E</span>
+          <span>Eventra</span>
+        </a>
+        <nav className="site-nav" aria-label="Main navigation">
+          <a className="site-nav__active" href="#home">Home</a>
+          <Link to="/events">Events</Link>
+          {isAuthenticated ? (
+            <>
+              <Link to={rolePath(user?.role)}>Account</Link>
+              <button type="button" className="nav-button" onClick={signOut}>Log out</button>
+            </>
+          ) : (
+            <>
+              <Link to="/login">Login</Link>
+              <Link className="nav-cta" to="/register">Register <ArrowRight size={15} aria-hidden="true" /></Link>
+            </>
+          )}
+        </nav>
+      </header>
 
-      <div className="ticks"></div>
+      <main>
+        <section className="hero-section" id="home">
+          <div className="hero-copy">
+            <p className="eyebrow">Your next experience starts here</p>
+            <h1>Make memories.<br /><span>Book the moment.</span></h1>
+            <p className="hero-description">
+              Discover the events that bring your community together. Simple booking, unforgettable experiences.
+            </p>
+            <a className="primary-button" href="#events">
+              Explore events <ArrowRight size={18} aria-hidden="true" />
+            </a>
+          </div>
+          <div className="hero-art" aria-label="A collage of event moments">
+            <div className="hero-art__ring" />
+            <div className="hero-art__tile hero-art__tile--large">LIVE<br /><strong>EVENTS</strong></div>
+            <div className="hero-art__tile hero-art__tile--small">GOOD<br /><strong>VIBES</strong></div>
+            <div className="hero-art__stamp">BE<br />THERE</div>
+          </div>
+        </section>
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
+        <section className="events-section" id="events">
+          <div className="section-heading">
+            <div>
+              <p className="eyebrow">Don&apos;t miss out</p>
+              <h2>Upcoming events</h2>
+            </div>
+            <Link className="text-link" to="/events">View all events <ArrowRight size={16} aria-hidden="true" /></Link>
+          </div>
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
+          {isLoading && <div className="state-card"><div className="loader" />Loading upcoming events...</div>}
+          {!isLoading && error && <div className="state-card state-card--error" role="alert">{error}</div>}
+          {!isLoading && !error && events.length === 0 && (
+            <div className="state-card">No upcoming events are available right now. Check back soon.</div>
+          )}
+          {!isLoading && !error && events.length > 0 && (
+            <div className="events-grid">
+              {events.map((event) => <EventCard key={event._id} event={event} />)}
+            </div>
+          )}
+        </section>
+
+        <section className="promise-section">
+          <div><Ticket size={22} aria-hidden="true" /><strong>Easy booking</strong><span>Reserve your spot in seconds.</span></div>
+          <div><Users size={22} aria-hidden="true" /><strong>Made for everyone</strong><span>Events for every kind of moment.</span></div>
+          <div><CalendarDays size={22} aria-hidden="true" /><strong>Always in the know</strong><span>Find what&apos;s happening next.</span></div>
+        </section>
+      </main>
+
+      <footer className="site-footer">
+        <a className="brand" href="/" aria-label="Eventra home"><span className="brand__mark">E</span><span>Eventra</span></a>
+        <p>Find your next unforgettable moment.</p>
+        <span>© {new Date().getFullYear()} Eventra</span>
+      </footer>
+    </div>
+  )
+}
+
+function HomePage() {
+  const params = new URLSearchParams(window.location.search)
+  const bookingId = params.get('bookingId')
+  const accessToken = window.localStorage.getItem('accessToken')
+
+  return bookingId
+    ? <PendingBookingPage bookingId={bookingId} accessToken={accessToken} />
+    : <LandingPage />
+}
+
+function App() {
+  return (
+    <BrowserRouter>
+      <AuthProvider>
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/events" element={<EventsPage />} />
+          <Route path="/events/:eventId" element={<EventDetailsPage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
+          <Route path="/bookings/new" element={<BookingPreparationPage />} />
+          <Route element={<ProtectedRoute roles={['ATTENDEE']} />}>
+            <Route path="/attendee" element={<RolePlaceholderPage />} />
+          </Route>
+          <Route element={<ProtectedRoute roles={['ORGANIZER']} />}>
+            <Route path="/organizer" element={<RolePlaceholderPage />} />
+          </Route>
+          <Route element={<ProtectedRoute roles={['ADMIN']} />}>
+            <Route path="/admin" element={<RolePlaceholderPage />} />
+          </Route>
+          <Route path="*" element={<HomePage />} />
+        </Routes>
+      </AuthProvider>
+    </BrowserRouter>
   )
 }
 

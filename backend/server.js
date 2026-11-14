@@ -10,6 +10,8 @@ const { notFound, errorHandler } = require('./middleware/errorMiddleware');
 const authRoutes = require('./routes/authRoutes');
 const bookingRoutes = require('./routes/bookingRoutes');
 const eventRoutes = require('./routes/eventRoutes');
+const paymentRoutes = require('./routes/paymentRoutes');
+const paymentWebhookRoutes = require('./routes/paymentWebhookRoutes');
 const testRoutes = require('./routes/testRoutes');
 
 const app = express();
@@ -17,6 +19,7 @@ const port = Number(process.env.PORT) || 5000;
 
 app.use(helmet());
 app.use(cors({ origin: process.env.FRONTEND_URL || 'http://localhost:5173' }));
+app.use('/api/v1/payments/webhook', paymentWebhookRoutes);
 app.use(express.json());
 app.use(morgan('dev'));
 
@@ -27,6 +30,7 @@ app.get('/api/v1/health', (req, res) => {
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/events', eventRoutes);
 app.use('/api/v1/bookings', bookingRoutes);
+app.use('/api/v1/payments', paymentRoutes);
 if (process.env.NODE_ENV !== 'production') {
   app.use('/api/v1/test', testRoutes);
 }
