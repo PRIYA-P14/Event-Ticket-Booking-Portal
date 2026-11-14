@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { ArrowRight, CalendarDays, Ticket, Users } from 'lucide-react'
 import { BrowserRouter, Link, Route, Routes } from 'react-router-dom'
 import EventCard from './components/EventCard'
+import BookingDetailsPage from './pages/BookingDetailsPage'
 import { AuthProvider } from './context/AuthContext.jsx'
 import { useAuth } from './context/authContext'
 import { rolePath } from './context/routeUtils'
@@ -10,6 +11,7 @@ import BookingPreparationPage from './pages/BookingPreparationPage'
 import EventDetailsPage from './pages/EventDetailsPage'
 import EventsPage from './pages/EventsPage'
 import LoginPage from './pages/LoginPage'
+import MyBookingsPage from './pages/MyBookingsPage'
 import PendingBookingPage from './pages/PendingBookingPage'
 import RegisterPage from './pages/RegisterPage'
 import RolePlaceholderPage from './pages/RolePlaceholderPage'
@@ -55,6 +57,7 @@ function LandingPage() {
           <Link to="/events">Events</Link>
           {isAuthenticated ? (
             <>
+              {user?.role === 'ATTENDEE' && <Link to="/bookings">My Bookings</Link>}
               <Link to={rolePath(user?.role)}>Account</Link>
               <button type="button" className="nav-button" onClick={signOut}>Log out</button>
             </>
@@ -145,6 +148,10 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/bookings/new" element={<BookingPreparationPage />} />
+          <Route element={<ProtectedRoute roles={['ATTENDEE']} />}>
+            <Route path="/bookings" element={<MyBookingsPage />} />
+            <Route path="/bookings/:bookingId" element={<BookingDetailsPage />} />
+          </Route>
           <Route element={<ProtectedRoute roles={['ATTENDEE']} />}>
             <Route path="/attendee" element={<RolePlaceholderPage />} />
           </Route>

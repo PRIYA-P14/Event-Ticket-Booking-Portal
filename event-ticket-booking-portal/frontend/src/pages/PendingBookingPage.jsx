@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react'
+import { ArrowLeft, CalendarDays, Ticket, Users } from 'lucide-react'
+import { Link } from 'react-router-dom'
 import { toast, Toaster } from 'react-hot-toast'
 import PaymentButton from '../components/PaymentButton'
 import { getBooking } from '../lib/paymentApi'
@@ -42,7 +44,9 @@ function PendingBookingPage({ bookingId, accessToken }) {
     return (
       <>
         <Toaster />
-        <main className="payment-page"><p>Loading booking...</p></main>
+        <main className="payment-page">
+          <div className="payment-loading"><div className="loader" />Loading booking...</div>
+        </main>
       </>
     )
   }
@@ -53,8 +57,10 @@ function PendingBookingPage({ bookingId, accessToken }) {
         <Toaster />
         <main className="payment-page">
           <section className="payment-card payment-error" role="alert">
+            <div className="payment-card__icon payment-card__icon--error">!</div>
             <h1>Unable to load payment</h1>
             <p>{error || 'A booking and authenticated attendee session are required.'}</p>
+            <Link className="text-link" to="/bookings"><ArrowLeft size={16} /> Back to my bookings</Link>
           </section>
         </main>
       </>
@@ -69,24 +75,39 @@ function PendingBookingPage({ bookingId, accessToken }) {
       <Toaster />
       <main className="payment-page">
         <section className="payment-card">
-          <p className="eyebrow">Pending booking</p>
-          <h1>Complete your booking</h1>
+          <Link className="payment-back-link" to="/bookings"><ArrowLeft size={16} /> My bookings</Link>
+          <div className="payment-card__heading">
+            <div>
+              <p className="eyebrow">{isPending ? 'Pending booking' : 'Booking confirmed'}</p>
+              <h1>{isPending ? 'Complete your booking' : 'Payment confirmed'}</h1>
+            </div>
+            <div className={`payment-card__icon ${isPending ? '' : 'payment-card__icon--success'}`}>
+              <Ticket size={26} aria-hidden="true" />
+            </div>
+          </div>
+          <p className="payment-card__lead">
+            {isPending ? 'Your seats are reserved. Complete payment to confirm your tickets.' : 'Your tickets are confirmed and ready for the event.'}
+          </p>
           <dl className="booking-summary">
             <div>
               <dt>Booking reference</dt>
-              <dd>{booking.bookingReference}</dd>
+              <dd className="booking-reference">{booking.bookingReference}</dd>
             </div>
             <div>
               <dt>Event</dt>
-              <dd>{event?.title || 'Event unavailable'}</dd>
+              <dd><span className="payment-detail"><CalendarDays size={16} />{event?.title || 'Event unavailable'}</span></dd>
             </div>
             <div>
               <dt>Tickets</dt>
-              <dd>{booking.quantity}</dd>
+              <dd><span className="payment-detail"><Users size={16} />{booking.quantity}</span></dd>
             </div>
             <div>
               <dt>Total amount</dt>
-              <dd>₹{Number(booking.totalPrice).toFixed(2)}</dd>
+              <dd className="payment-total">₹{Number(booking.totalPrice).toFixed(2)}</dd>
+            </div>
+            <div>
+              <dt>Payment status</dt>
+              <dd><span className={`payment-status ${isPending ? 'payment-status--pending' : 'payment-status--success'}`}><span className="payment-status__dot" />{isPending ? 'PENDING PAYMENT' : 'CAPTURED'}</span></dd>
             </div>
           </dl>
 

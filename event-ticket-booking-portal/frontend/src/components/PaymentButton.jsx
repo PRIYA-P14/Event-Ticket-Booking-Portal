@@ -68,13 +68,14 @@ function PaymentButton({ booking, accessToken, onPaymentConfirmed }) {
   }
 
   return (
-    <>
-    <button type="button" onClick={handlePayment} disabled={isPaying}>
-      {isPaying ? 'Processing...' : 'Pay Now'}
-    </button>
-    <p>Booking reference: {booking.bookingReference}</p>
-    <p>Payment status: {paymentStatus}</p>
-    </>
+    <div className="payment-actions">
+      <button className="payment-button" type="button" onClick={handlePayment} disabled={isPaying} aria-busy={isPaying}>
+        {isPaying ? <><span className="payment-button__spinner" />Processing payment...</> : 'Pay Now'}
+      </button>
+      <p className="payment-action-status">
+        Payment status: <strong>{paymentStatus === 'CAPTURED' ? 'CAPTURED' : 'PENDING PAYMENT'}</strong>
+      </p>
+    </div>
   )
 }
 
