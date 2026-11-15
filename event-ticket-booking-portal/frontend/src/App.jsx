@@ -17,6 +17,7 @@ import RegisterPage from './pages/RegisterPage'
 import RolePlaceholderPage from './pages/RolePlaceholderPage'
 import OrganizerDashboard from './pages/OrganizerDashboard'
 import AttendeeListPage from './pages/AttendeeListPage'
+import AdminDashboard from './pages/AdminDashboard'
 import { getUpcomingEvents } from './lib/eventApi'
 import './App.css'
 
@@ -162,7 +163,7 @@ function App() {
             <Route path="/organizer/events/:eventId/attendees" element={<AttendeeListPage />} />
           </Route>
           <Route element={<ProtectedRoute roles={['ADMIN']} />}>
-            <Route path="/admin" element={<RolePlaceholderPage />} />
+            <Route path="/admin" element={<AdminDashboard />} />
           </Route>
           <Route path="*" element={<HomePage />} />
         </Routes>

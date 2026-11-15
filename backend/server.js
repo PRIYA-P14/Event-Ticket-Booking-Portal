@@ -12,6 +12,7 @@ const bookingRoutes = require('./routes/bookingRoutes');
 const eventRoutes = require('./routes/eventRoutes');
 const paymentRoutes = require('./routes/paymentRoutes');
 const organizerRoutes = require('./routes/organizerRoutes');
+const adminRoutes = require('./routes/adminRoutes');
 const testRoutes = require('./routes/testRoutes');
 
 const app = express();
@@ -52,6 +53,7 @@ app.use('/api/v1/events', eventRoutes);
 app.use('/api/v1/bookings', bookingRoutes);
 app.use('/api/v1/payments', paymentRoutes);
 app.use('/api/v1/organizer', organizerRoutes);
+app.use('/api/v1/admin', adminRoutes);
 if (process.env.NODE_ENV !== 'production') {
   app.use('/api/v1/test', testRoutes);
 }
