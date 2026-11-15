@@ -2,15 +2,7 @@ const { z } = require('zod');
 
 const objectId = z.string().regex(/^[a-f\d]{24}$/i, 'A valid MongoDB ObjectId is required');
 
-const createOrderSchema = z.object({ bookingId: objectId }).strict();
-
-const verifyPaymentSchema = z
-  .object({
-    razorpay_order_id: z.string().trim().min(1).max(100),
-    razorpay_payment_id: z.string().trim().min(1).max(100),
-    razorpay_signature: z.string().trim().min(1).max(256),
-  })
-  .strict();
+const simulatePaymentSchema = z.object({ bookingId: objectId }).strict();
 
 const paymentIdSchema = z.object({ bookingId: objectId });
 
@@ -25,8 +17,7 @@ const parseOrThrow = (schema, input) => {
 };
 
 module.exports = {
-  createOrderSchema,
-  verifyPaymentSchema,
+  simulatePaymentSchema,
   paymentIdSchema,
   parseOrThrow,
 };

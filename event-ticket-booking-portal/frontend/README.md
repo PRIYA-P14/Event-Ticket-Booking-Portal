@@ -14,3 +14,18 @@ The React Compiler is not enabled on this template because of its impact on dev 
 ## Expanding the ESLint configuration
 
 If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+# Eventra frontend
+
+Eventra uses a simulated demo payment flow. When an authenticated attendee
+clicks **Pay Now**, the backend verifies the booking and transactionally marks
+the stored amount as a successful `DEMO` payment. No payment gateway is
+contacted and no actual money is collected.
+
+The demo payment endpoint is:
+
+```text
+POST /api/v1/payments/simulate-success
+```
+
+The request contains only the booking ID. The backend always obtains the
+amount from the stored booking.

@@ -86,7 +86,7 @@ function PendingBookingPage({ bookingId, accessToken }) {
             </div>
           </div>
           <p className="payment-card__lead">
-            {isPending ? 'Your seats are reserved. Complete payment to confirm your tickets.' : 'Your tickets are confirmed and ready for the event.'}
+            {isPending ? 'Your seats are reserved. Complete the demo payment to confirm your tickets.' : 'Your tickets are confirmed. No actual money was collected.'}
           </p>
           <dl className="booking-summary">
             <div>
@@ -107,7 +107,7 @@ function PendingBookingPage({ bookingId, accessToken }) {
             </div>
             <div>
               <dt>Payment status</dt>
-              <dd><span className={`payment-status ${isPending ? 'payment-status--pending' : 'payment-status--success'}`}><span className="payment-status__dot" />{isPending ? 'PENDING PAYMENT' : 'CAPTURED'}</span></dd>
+              <dd><span className={`payment-status ${isPending ? 'payment-status--pending' : 'payment-status--success'}`}><span className="payment-status__dot" />{isPending ? 'PENDING PAYMENT' : 'SUCCESS'}</span></dd>
             </div>
           </dl>
 
@@ -122,6 +122,7 @@ function PendingBookingPage({ bookingId, accessToken }) {
                 }))
               }}
             />
+            
           ) : (
             <p className="payment-success" role="status">
               Payment confirmed. Booking reference: {booking.bookingReference}

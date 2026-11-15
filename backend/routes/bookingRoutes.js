@@ -6,12 +6,14 @@ const {
   createBooking,
   getMyBookings,
   getBookingById,
+  cancelBooking,
 } = require('../controllers/bookingController');
 
 const router = express.Router();
 
 router.use(authenticate);
 router.post('/', authorizeRoles('ATTENDEE'), createBooking);
+router.post('/:bookingId/cancel', authorizeRoles('ATTENDEE'), cancelBooking);
 router.get('/my-bookings', authorizeRoles('ATTENDEE'), getMyBookings);
 router.get('/:bookingId', getBookingById);
 

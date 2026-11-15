@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const Booking = require('../models/Booking');
 const Counter = require('../models/Counter');
 const Event = require('../models/Event');
+const Payment = require('../models/Payment');
 const {
   bookingIdSchema,
   createBookingSchema,
@@ -176,4 +177,80 @@ const getBookingById = async (req, res, next) => {
   }
 };
 
-module.exports = { createBooking, getMyBookings, getBookingById };
+const cancelBooking = async (req, res, next) => {
+  const session = await mongoose.startSession();
+  try {
+    const { bookingId } = parseOrThrow(bookingIdSchema, req.params);
+    let cancelledBooking;
+    await session.withTransaction(async () => {
+      const currentBooking = await Booking.findOne({
+        _id: bookingId,
+        attendeeId: req.user._id,
+        status: { $in: activeStatuses },
+      }).session(session);
+      if (!currentBooking) {
+        const existingBooking = await Booking.findOne({ _id: bookingId, attendeeId: req.user._id }).session(session);
+        if (!existingBooking) throw createHttpError(404, 'Booking not found');
+        if (existingBooking.status === 'CANCELLED') throw createHttpError(409, 'Booking is already cancelled');
+        throw createHttpError(409, `Booking with status ${existingBooking.status} cannot be cancelled`);
+      }
+      const event = await Event.findOne({ _id: currentBooking.eventId }).session(session);
+      if (!event) throw createHttpError(404, 'Event not found');
+      if (event.startAt <= new Date()) {
+        throw createHttpError(409, 'Bookings cannot be cancelled after the event starts');
+      }
+
+      const releasedEvent = await Event.findOneAndUpdate(
+        {
+          _id: currentBooking.eventId,
+          $expr: { $gte: ['$ticketsBooked', currentBooking.quantity] },
+        },
+        { $inc: { ticketsBooked: -currentBooking.quantity } },
+        { returnDocument: 'after', session, runValidators: true }
+      );
+      if (!releasedEvent) {
+        throw createHttpError(409, 'Unable to release the reserved seats safely');
+      }
+
+      currentBooking.status = 'CANCELLED';
+      currentBooking.cancelledAt = new Date();
+      await currentBooking.save({ session });
+      if (currentBooking.paymentId) {
+        await Payment.updateOne(
+          { _id: currentBooking.paymentId, bookingId, attendeeId: req.user._id },
+          {
+            $set: {
+              provider: 'DEMO',
+              status: 'CANCELLED',
+              paymentStatus: 'CANCELLED',
+              paymentMethod: 'DEMO',
+            },
+            $unset: {
+              refundId: 1,
+              refundAmount: 1,
+              refundedAmount: 1,
+              refundStatus: 1,
+              refundInitiatedAt: 1,
+              refundCompletedAt: 1,
+              refundError: 1,
+            },
+          },
+          { session }
+        );
+      }
+      cancelledBooking = currentBooking;
+    });
+    console.info(`Demo booking ${cancelledBooking.bookingReference} cancelled and seats released`);
+    return res.json({
+      success: true,
+      message: 'Booking cancelled. Demo payments do not require refunds.',
+      booking: cancelledBooking,
+    });
+  } catch (error) {
+    return next(error);
+  } finally {
+    await session.endSession();
+  }
+};
+
+module.exports = { createBooking, getMyBookings, getBookingById, cancelBooking };

@@ -13,21 +13,21 @@ export const getBooking = async (bookingId, accessToken) => {
   return data.booking
 }
 
-export const createPaymentOrder = async (bookingId, accessToken) => {
+export const simulatePaymentSuccess = async (bookingId, accessToken) => {
   const { data } = await api.post(
-    '/payments/create-order',
+    '/payments/simulate-success',
     { bookingId },
     authConfig(accessToken),
   )
-  return data.checkout
-}
-
-export const verifyPayment = async (payment, accessToken) => {
-  const { data } = await api.post('/payments/verify', payment, authConfig(accessToken))
   return data
 }
 
 export const getPaymentStatus = async (bookingId, accessToken) => {
   const { data } = await api.get(`/payments/${bookingId}`, authConfig(accessToken))
   return data.payment
+}
+
+export const getRefundStatus = async (bookingId, accessToken) => {
+  const { data } = await api.get(`/payments/refund/${bookingId}`, authConfig(accessToken))
+  return data.refund
 }

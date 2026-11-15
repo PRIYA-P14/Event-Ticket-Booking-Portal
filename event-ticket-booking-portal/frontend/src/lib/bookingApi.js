@@ -27,3 +27,8 @@ export const getBookingDetails = async (bookingId, accessToken) => {
   const { data } = await api.get(`/bookings/${bookingId}`, authConfig(accessToken))
   return data.booking
 }
+
+export const cancelBooking = async (bookingId, accessToken) => {
+  const { data } = await api.post(`/bookings/${bookingId}/cancel`, {}, authConfig(accessToken))
+  return data
+}

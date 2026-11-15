@@ -15,6 +15,9 @@ const errorHandler = (error, req, res, next) => {
     statusCode = 409;
     message = 'A resource with the same unique value already exists';
   }
+  if (process.env.NODE_ENV === 'production' && statusCode >= 500) {
+    message = 'Internal server error';
+  }
 
   const response = {
     success: false,
