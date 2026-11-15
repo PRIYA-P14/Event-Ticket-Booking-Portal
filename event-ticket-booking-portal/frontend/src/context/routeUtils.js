@@ -1,5 +1,5 @@
 const rolePath = (role) => ({
-  ATTENDEE: '/attendee',
+  ATTENDEE: '/',
   ORGANIZER: '/organizer',
   ADMIN: '/admin',
 }[role] || '/')

@@ -3,6 +3,7 @@ const bcrypt = require('bcryptjs');
 const Booking = require('../models/Booking');
 const Category = require('../models/Category');
 const Event = require('../models/Event');
+const Payment = require('../models/Payment');
 const User = require('../models/User');
 const Venue = require('../models/Venue');
 const {
@@ -10,6 +11,7 @@ const {
   categorySchema,
   idSchema,
   organizerSchema,
+  organizerUpdateSchema,
   parseOrThrow,
   statusSchema,
   venueSchema,
@@ -33,12 +35,24 @@ const createHttpError = (statusCode, message) => {
 
 const getDashboard = async (req, res, next) => {
   try {
-    const [attendees, organizers, activeEvents, bookings, bookingGroups] = await Promise.all([
+    const [attendees, organizers, activeEvents, bookings, bookingGroups, successfulPayments, revenue, recentBookings, recentEvents] = await Promise.all([
       User.countDocuments({ role: 'ATTENDEE' }),
       User.countDocuments({ role: 'ORGANIZER' }),
       Event.countDocuments({ isActive: true }),
       Booking.countDocuments(),
       Booking.aggregate([{ $group: { _id: '$status', count: { $sum: 1 } } }]),
+      Payment.countDocuments({ provider: 'DEMO', paymentStatus: 'SUCCESS' }),
+      Payment.aggregate([
+        { $match: { provider: 'DEMO', paymentStatus: 'SUCCESS' } },
+        { $group: { _id: null, amount: { $sum: '$amount' } } },
+      ]),
+      Booking.find().sort({ createdAt: -1 }).limit(5)
+        .select('bookingReference quantity totalPrice status createdAt attendeeId eventId')
+        .populate('attendeeId', 'name email')
+        .populate('eventId', 'title'),
+      Event.find().sort({ createdAt: -1 }).limit(5)
+        .select('title startAt isActive seatLimit ticketsBooked createdAt')
+        .populate('organizerId', 'name')
     ]);
     const counts = Object.fromEntries(bookingGroups.map((item) => [item._id, item.count]));
     return res.json({
@@ -51,7 +65,11 @@ const getDashboard = async (req, res, next) => {
         confirmedBookings: counts.BOOKED || 0,
         cancelledBookings: counts.CANCELLED || 0,
         pendingPaymentBookings: counts.PENDING_PAYMENT || 0,
+        successfulDemoPayments: successfulPayments,
+        demoPaymentAmount: revenue[0]?.amount || 0,
       },
+      recentBookings,
+      recentEvents,
     });
   } catch (error) {
     return next(error);
@@ -82,6 +100,25 @@ const createOrganizer = async (req, res, next) => {
     const passwordHash = await bcrypt.hash(password, 12);
     const organizer = await User.create({ ...profile, passwordHash, role: 'ORGANIZER' });
     return res.status(201).json({ success: true, message: 'Organizer created successfully', organizer: safeOrganizer(organizer) });
+  } catch (error) {
+    return next(error);
+  }
+};
+
+const updateOrganizer = async (req, res, next) => {
+  try {
+    const { id } = parseOrThrow(idSchema, req.params);
+    const data = parseOrThrow(organizerUpdateSchema, req.body);
+    if (data.email && await User.exists({ email: data.email, _id: { $ne: id } })) {
+      throw createHttpError(409, 'An account with this email already exists');
+    }
+    const organizer = await User.findOneAndUpdate(
+      { _id: id, role: 'ORGANIZER' },
+      data,
+      { returnDocument: 'after', runValidators: true }
+    ).select('name email phone role isActive createdAt');
+    if (!organizer) throw createHttpError(404, 'Organizer not found');
+    return res.json({ success: true, message: 'Organizer updated successfully', organizer: safeOrganizer(organizer) });
   } catch (error) {
     return next(error);
   }
@@ -141,7 +178,11 @@ const updateVenue = async (req, res, next) => {
 const setVenueStatus = async (req, res, next) => {
   try {
     const { id } = parseOrThrow(idSchema, req.params);
-    const venue = await Venue.findByIdAndUpdate(id, parseOrThrow(statusSchema, req.body), { returnDocument: 'after' });
+    const status = parseOrThrow(statusSchema, req.body);
+    if (!status.isActive && await Event.exists({ venueId: id, isActive: true })) {
+      throw createHttpError(409, 'Venue cannot be deactivated while active events use it');
+    }
+    const venue = await Venue.findByIdAndUpdate(id, status, { returnDocument: 'after' });
     if (!venue) throw createHttpError(404, 'Venue not found');
     return res.json({ success: true, venue });
   } catch (error) {
@@ -250,7 +291,7 @@ const listBookings = async (req, res, next) => {
 };
 
 module.exports = {
-  getDashboard, listOrganizers, createOrganizer, setOrganizerStatus,
+  getDashboard, listOrganizers, createOrganizer, updateOrganizer, setOrganizerStatus,
   listVenues, createVenue, updateVenue, setVenueStatus,
   listCategories, createCategory, updateCategory, setCategoryStatus,
   listBookings,

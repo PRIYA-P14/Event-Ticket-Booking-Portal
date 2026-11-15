@@ -2,6 +2,8 @@ import { useEffect, useMemo, useState } from 'react'
 import { ArrowLeft, ArrowRight, Search, SlidersHorizontal } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import EventCard from '../components/EventCard'
+import SiteNavigation from '../components/SiteNavigation'
+import BackButton from '../components/BackButton'
 import { getEvents } from '../lib/eventApi'
 
 const PAGE_SIZE = 9
@@ -63,15 +65,11 @@ function EventsPage() {
         <Link className="brand" to="/" aria-label="Eventra home">
           <span className="brand__mark">E</span><span>Eventra</span>
         </Link>
-        <nav className="site-nav" aria-label="Main navigation">
-          <Link to="/">Home</Link>
-          <span className="site-nav__active">Events</span>
-          <Link to="/login">Login</Link>
-          <Link className="nav-cta" to="/register">Register <ArrowRight size={15} aria-hidden="true" /></Link>
-        </nav>
+        <SiteNavigation active="events" />
       </header>
 
       <main className="events-page">
+        <BackButton />
         <div className="events-page__intro">
           <div>
             <p className="eyebrow">Find your next moment</p>

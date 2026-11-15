@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
-import { ArrowLeft, CalendarDays, Ticket, Users } from 'lucide-react'
-import { Link } from 'react-router-dom'
+import { CalendarDays, Ticket, Users } from 'lucide-react'
 import { toast, Toaster } from 'react-hot-toast'
 import PaymentButton from '../components/PaymentButton'
+import BackButton from '../components/BackButton'
 import { getBooking } from '../lib/paymentApi'
 
 function PendingBookingPage({ bookingId, accessToken }) {
@@ -57,10 +57,11 @@ function PendingBookingPage({ bookingId, accessToken }) {
         <Toaster />
         <main className="payment-page">
           <section className="payment-card payment-error" role="alert">
+            <BackButton fallback="/bookings" />
             <div className="payment-card__icon payment-card__icon--error">!</div>
             <h1>Unable to load payment</h1>
             <p>{error || 'A booking and authenticated attendee session are required.'}</p>
-            <Link className="text-link" to="/bookings"><ArrowLeft size={16} /> Back to my bookings</Link>
+            <BackButton fallback="/bookings" />
           </section>
         </main>
       </>
@@ -75,7 +76,7 @@ function PendingBookingPage({ bookingId, accessToken }) {
       <Toaster />
       <main className="payment-page">
         <section className="payment-card">
-          <Link className="payment-back-link" to="/bookings"><ArrowLeft size={16} /> My bookings</Link>
+          <BackButton fallback="/bookings" />
           <div className="payment-card__heading">
             <div>
               <p className="eyebrow">{isPending ? 'Pending booking' : 'Booking confirmed'}</p>

@@ -1,7 +1,9 @@
 import { useState } from 'react'
-import { ArrowLeft, ArrowRight } from 'lucide-react'
+import { ArrowRight } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
 import { register } from '../lib/authApi'
+import BackButton from '../components/BackButton'
+import ThemeToggle from '../components/ThemeToggle'
 
 function RegisterPage() {
   const navigate = useNavigate()
@@ -32,13 +34,16 @@ function RegisterPage() {
   return (
     <main className="auth-page">
       <section className="auth-panel auth-panel--intro">
-        <Link className="brand" to="/"><span className="brand__mark">E</span><span>Eventra</span></Link>
+        <div className="auth-panel__top">
+          <Link className="brand" to="/"><span className="brand__mark">E</span><span>Eventra</span></Link>
+          <ThemeToggle />
+        </div>
+        <BackButton fallback="/" light={false} />
         <div>
           <p className="eyebrow">Join the experience</p>
           <h1>Find your<br /><span>next thing.</span></h1>
           <p>Create your attendee account and start booking the moments worth remembering.</p>
         </div>
-        <Link className="back-link" to="/"><ArrowLeft size={16} /> Back to home</Link>
       </section>
       <section className="auth-panel auth-panel--form">
         <div className="auth-form-wrap">

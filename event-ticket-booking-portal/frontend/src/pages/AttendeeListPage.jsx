@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
-import { ArrowLeft, ChevronLeft, ChevronRight, Search } from 'lucide-react'
-import { Link, useParams } from 'react-router-dom'
+import { ChevronLeft, ChevronRight, Search } from 'lucide-react'
+import { useParams } from 'react-router-dom'
 import { useAuth } from '../context/authContext'
+import BackButton from '../components/BackButton'
 import { getOrganizerAttendees } from '../lib/organizerApi'
 import { formatDate } from '../lib/eventFormatters'
 
@@ -46,7 +47,7 @@ function AttendeeListPage() {
 
   return (
     <main className="organizer-page">
-      <Link className="back-link back-link--light" to="/organizer"><ArrowLeft size={16} /> Back to dashboard</Link>
+      <BackButton fallback="/organizer" />
       <header className="organizer-page__header organizer-page__header--compact">
         <div>
           <p className="eyebrow">Attendee management</p>

@@ -14,6 +14,7 @@ const request = async (method, path, token, data, params) => {
 export const getAdminDashboard = (token) => request('get', '/admin/dashboard', token)
 export const getOrganizers = (token, search) => request('get', '/admin/organizers', token, undefined, search ? { search } : undefined)
 export const createOrganizer = (token, data) => request('post', '/admin/organizers', token, data)
+export const updateOrganizer = (token, id, data) => request('put', `/admin/organizers/${id}`, token, data)
 export const setOrganizerStatus = (token, id, isActive) => request('patch', `/admin/organizers/${id}/status`, token, { isActive })
 export const getVenues = (token) => request('get', '/admin/venues', token)
 export const saveVenue = (token, id, data) => request(id ? 'put' : 'post', id ? `/admin/venues/${id}` : '/admin/venues', token, data)

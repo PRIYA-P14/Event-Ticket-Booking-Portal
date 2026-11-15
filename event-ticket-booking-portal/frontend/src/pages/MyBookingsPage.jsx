@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { ArrowRight, CalendarDays, Clock3, MapPin, Ticket, Users } from 'lucide-react'
 import { Link } from 'react-router-dom'
+import BackButton from '../components/BackButton'
 import { useAuth } from '../context/authContext'
 import { getMyBookings } from '../lib/bookingApi'
 import { formatCurrency, formatDate, formatTime } from '../lib/eventFormatters'
@@ -80,13 +81,9 @@ function MyBookingsPage() {
     <div className="portal-shell">
       <header className="site-header events-header">
         <Link className="brand" to="/" aria-label="Eventra home"><span className="brand__mark">E</span><span>Eventra</span></Link>
-        <nav className="site-nav" aria-label="Main navigation">
-          <Link to="/">Home</Link>
-          <Link to="/events">Events</Link>
-          <span className="site-nav__active">My Bookings</span>
-        </nav>
       </header>
       <main className="history-page">
+        <BackButton fallback="/" />
         <div className="history-page__intro">
           <div>
             <p className="eyebrow">Your Eventra journey</p>

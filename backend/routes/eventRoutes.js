@@ -7,6 +7,7 @@ const {
   getAdminEvents,
   updateEvent,
   deactivateEvent,
+  activateEvent,
   listPublicEvents,
   getPublicEvent,
 } = require('../controllers/eventController');
@@ -18,6 +19,7 @@ router.get('/admin', authenticate, authorizeRoles('ADMIN'), getAdminEvents);
 router.get('/', listPublicEvents);
 router.put('/:eventId', authenticate, authorizeRoles('ADMIN'), updateEvent);
 router.patch('/:eventId/deactivate', authenticate, authorizeRoles('ADMIN'), deactivateEvent);
+router.patch('/:eventId/activate', authenticate, authorizeRoles('ADMIN'), activateEvent);
 router.get('/:eventId', getPublicEvent);
 
 module.exports = router;

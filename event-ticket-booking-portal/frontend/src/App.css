@@ -1,7 +1,26 @@
 .portal-shell {
   min-height: 100vh;
-  background: #fbfbfc;
-  color: #141414;
+  background: var(--color-background);
+  color: var(--color-text);
+}
+
+.theme-toggle {
+  display: inline-grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  padding: 0;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  color: var(--color-text);
+  background: var(--color-surface);
+  cursor: pointer;
+}
+
+.theme-toggle:hover {
+  color: white;
+  border-color: var(--color-primary-bright);
+  background: var(--color-primary);
 }
 
 .organizer-page {
@@ -26,6 +45,13 @@
 
 .admin-page__header {
   margin-bottom: 30px;
+}
+
+.admin-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 
 .admin-page__header h1 {
@@ -60,9 +86,40 @@
 
 .admin-stats {
   display: grid;
-  grid-template-columns: repeat(7, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   gap: 10px;
   margin-bottom: 32px;
+}
+
+.admin-activity-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 18px;
+  margin-bottom: 24px;
+}
+
+.admin-activity-card {
+  min-width: 0;
+  padding: 22px;
+  border: 1px solid #e8e6ed;
+  border-radius: 16px;
+  background: white;
+}
+
+.admin-activity-card .admin-section__heading {
+  margin-bottom: 14px;
+}
+
+.admin-activity-card h2 {
+  margin: 0;
+  font-size: 22px;
+  letter-spacing: -0.04em;
+}
+
+.admin-muted {
+  margin: 0;
+  color: #6b6b72;
+  font-size: 13px;
 }
 
 .admin-stats > div {
@@ -215,6 +272,25 @@
   font-size: 12px;
 }
 
+.admin-account-status {
+  width: fit-content;
+  padding: 3px 7px;
+  border-radius: 999px;
+  font-size: 10px !important;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+}
+
+.admin-account-status--active {
+  color: #166534 !important;
+  background: #dcfce7;
+}
+
+.admin-account-status--inactive {
+  color: #92400e !important;
+  background: #fef3c7;
+}
+
 .admin-row-actions {
   display: flex;
   align-items: center;
@@ -273,6 +349,10 @@
   .admin-stats {
     grid-template-columns: repeat(4, 1fr);
   }
+
+  .admin-activity-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 680px) {
@@ -308,24 +388,24 @@
 
 .organizer-page__header {
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   justify-content: space-between;
   gap: 24px;
+  margin-bottom: 28px;
+}
+
+.organizer-page__intro {
   margin-bottom: 34px;
 }
 
-.organizer-page__header--compact {
-  margin-top: 24px;
-}
-
-.organizer-page__header h1 {
+.organizer-page__intro h1 {
   margin: 0 0 10px;
   color: #141414;
   font-size: clamp(32px, 5vw, 52px);
   letter-spacing: -0.06em;
 }
 
-.organizer-page__header p:not(.eyebrow) {
+.organizer-page__intro p:not(.eyebrow) {
   margin: 0;
   color: #6b6b72;
 }
@@ -565,11 +645,6 @@
   .organizer-page {
     width: min(100% - 32px, 600px);
     padding-top: 28px;
-  }
-
-  .organizer-page__header {
-    display: grid;
-    align-items: start;
   }
 
   .organizer-stats,
@@ -2502,7 +2577,7 @@
   display: grid;
   grid-template-columns: minmax(300px, 0.9fr) minmax(360px, 1.1fr);
   min-height: 100vh;
-  background: #fbfbfc;
+  background: var(--bg-primary);
 }
 
 .auth-panel {
@@ -2510,6 +2585,13 @@
   flex-direction: column;
   justify-content: space-between;
   padding: clamp(28px, 6vw, 78px);
+}
+
+.auth-panel__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
 }
 
 .auth-panel--intro {
@@ -2549,13 +2631,22 @@
   text-decoration: none;
 }
 
+.back-button {
+  border: 0;
+  padding: 0;
+  font-family: inherit;
+  background: transparent;
+  cursor: pointer;
+}
+
 .back-link:hover {
   color: white;
 }
 
 .auth-panel--form {
   justify-content: center;
-  background: white;
+  color: var(--text-primary);
+  background: var(--bg-card);
 }
 
 .auth-form-wrap {
@@ -2565,14 +2656,14 @@
 
 .auth-form-wrap h2 {
   margin: 0 0 8px;
-  color: #141414;
+  color: var(--text-primary);
   font-size: 35px;
   letter-spacing: -0.06em;
 }
 
 .auth-subtitle {
   margin-bottom: 30px;
-  color: #85858d;
+  color: var(--text-secondary);
   font-size: 14px;
 }
 
@@ -2583,7 +2674,7 @@
 
 .auth-form-wrap label {
   margin-top: 9px;
-  color: #34343a;
+  color: var(--text-primary);
   font-size: 13px;
   font-weight: 700;
 }
@@ -2591,11 +2682,11 @@
 .auth-form-wrap input {
   width: 100%;
   padding: 13px 14px;
-  border: 1px solid #dedde3;
+  border: 1px solid var(--border-color);
   border-radius: 8px;
   outline: none;
-  color: #141414;
-  background: #fbfbfc;
+  color: var(--text-primary);
+  background: var(--bg-primary);
   font: inherit;
   font-size: 14px;
 }
@@ -2620,7 +2711,7 @@
   display: grid;
   padding: 3px;
   border: 0;
-  color: #777780;
+  color: var(--text-secondary);
   background: transparent;
   cursor: pointer;
   transform: translateY(-50%);
@@ -2636,14 +2727,14 @@
   border: 0;
   border-radius: 8px;
   color: white;
-  background: #141414;
+  background: linear-gradient(120deg, var(--color-primary), var(--color-accent));
   cursor: pointer;
   font: inherit;
   font-weight: 700;
 }
 
 .form-submit:hover {
-  background: #7c3aed;
+  background: linear-gradient(120deg, var(--color-primary-bright), var(--color-accent));
 }
 
 .form-submit:disabled {
@@ -2659,13 +2750,13 @@
 
 .auth-switch {
   margin-top: 23px;
-  color: #85858d;
+  color: var(--text-secondary);
   font-size: 13px;
   text-align: center;
 }
 
 .auth-switch a {
-  color: #7c3aed;
+  color: var(--color-primary-bright);
   font-weight: 700;
   text-decoration: none;
 }
@@ -2736,4 +2827,525 @@
   .placeholder-card {
     padding: 30px;
   }
+}
+
+/* Theme values must win over legacy page-specific light-mode declarations. */
+[data-theme='dark'] {
+  color: var(--text-primary);
+  background: var(--bg-primary);
+}
+
+[data-theme='dark'] .portal-shell,
+[data-theme='dark'] .organizer-page,
+[data-theme='dark'] .admin-page,
+[data-theme='dark'] .events-page,
+[data-theme='dark'] .event-details-page,
+[data-theme='dark'] .history-page,
+[data-theme='dark'] .booking-page,
+[data-theme='dark'] .booking-details-page,
+[data-theme='dark'] .payment-page,
+[data-theme='dark'] .placeholder-page {
+  color: var(--text-primary);
+  background: var(--bg-primary);
+}
+
+[data-theme='dark'] h1,
+[data-theme='dark'] h2,
+[data-theme='dark'] h3,
+[data-theme='dark'] h4,
+[data-theme='dark'] .hero-copy h1,
+[data-theme='dark'] .events-page__intro h1,
+[data-theme='dark'] .history-page__intro h1,
+[data-theme='dark'] .event-details-card h1,
+[data-theme='dark'] .booking-details-card h1,
+[data-theme='dark'] .payment-card h1,
+[data-theme='dark'] .admin-page__header h1,
+[data-theme='dark'] .organizer-page__intro h1 {
+  color: var(--text-primary) !important;
+}
+
+[data-theme='dark'] .hero-copy h1 span,
+[data-theme='dark'] .eyebrow,
+[data-theme='dark'] .event-category,
+[data-theme='dark'] .text-link,
+[data-theme='dark'] .section-heading .eyebrow,
+[data-theme='dark'] .events-page__intro > svg {
+  color: var(--color-accent) !important;
+}
+
+[data-theme='dark'] .hero-description,
+[data-theme='dark'] .events-page__intro p:not(.eyebrow),
+[data-theme='dark'] .history-page__intro p:not(.eyebrow),
+[data-theme='dark'] .event-details__description,
+[data-theme='dark'] .event-details__facts,
+[data-theme='dark'] .event-details__venue,
+[data-theme='dark'] .event-details__organizer,
+[data-theme='dark'] .event-card__meta,
+[data-theme='dark'] .event-card__meta span,
+[data-theme='dark'] .event-card__price small,
+[data-theme='dark'] .organizer-event-card__facts,
+[data-theme='dark'] .organizer-event-card__metrics,
+[data-theme='dark'] .admin-muted,
+[data-theme='dark'] .admin-stats span,
+[data-theme='dark'] .admin-date-filter,
+[data-theme='dark'] .state-card,
+[data-theme='dark'] .promise-section span,
+[data-theme='dark'] .site-footer {
+  color: var(--text-secondary) !important;
+}
+
+[data-theme='dark'] .event-card,
+[data-theme='dark'] .organizer-stat,
+[data-theme='dark'] .organizer-event-card,
+[data-theme='dark'] .admin-stats > div,
+[data-theme='dark'] .admin-activity-card,
+[data-theme='dark'] .admin-section,
+[data-theme='dark'] .history-card,
+[data-theme='dark'] .event-details-card,
+[data-theme='dark'] .booking-event-card,
+[data-theme='dark'] .booking-confirmation,
+[data-theme='dark'] .booking-details-card,
+[data-theme='dark'] .payment-card,
+[data-theme='dark'] .placeholder-card {
+  border-color: var(--border-color) !important;
+  background: var(--bg-card) !important;
+}
+
+[data-theme='dark'] .event-card h3,
+[data-theme='dark'] .event-card__price,
+[data-theme='dark'] .organizer-event-card h3,
+[data-theme='dark'] .organizer-event-card__metrics strong,
+[data-theme='dark'] .admin-stats strong,
+[data-theme='dark'] .admin-section h2,
+[data-theme='dark'] .history-card h2,
+[data-theme='dark'] .booking-details-card h2,
+[data-theme='dark'] .promise-section strong {
+  color: var(--text-primary) !important;
+}
+
+[data-theme='dark'] .site-header,
+[data-theme='dark'] .events-header,
+[data-theme='dark'] .admin-list,
+[data-theme='dark'] .event-card__footer,
+[data-theme='dark'] .promise-section {
+  border-color: var(--border-color) !important;
+}
+
+[data-theme='dark'] .brand,
+[data-theme='dark'] .site-nav a,
+[data-theme='dark'] .site-nav__active,
+[data-theme='dark'] .nav-button,
+[data-theme='dark'] .pagination,
+[data-theme='dark'] .filter-field,
+[data-theme='dark'] .search-field,
+[data-theme='dark'] .back-link {
+  color: var(--text-secondary) !important;
+}
+
+[data-theme='dark'] .site-nav a:hover,
+[data-theme='dark'] .site-nav__active,
+[data-theme='dark'] .nav-button:hover,
+[data-theme='dark'] .back-link:hover {
+  color: var(--color-accent) !important;
+}
+
+[data-theme='dark'] input,
+[data-theme='dark'] select,
+[data-theme='dark'] textarea,
+[data-theme='dark'] .event-filters label,
+[data-theme='dark'] .admin-search input,
+[data-theme='dark'] .admin-form input,
+[data-theme='dark'] .admin-form textarea,
+[data-theme='dark'] .admin-form select {
+  border-color: var(--border-color) !important;
+  color: var(--text-primary) !important;
+  background: var(--bg-card) !important;
+}
+
+[data-theme='dark'] input::placeholder,
+[data-theme='dark'] textarea::placeholder {
+  color: var(--text-secondary) !important;
+}
+
+[data-theme='dark'] .admin-section-nav a,
+[data-theme='dark'] .secondary-button,
+[data-theme='dark'] .nav-cta {
+  border-color: var(--border-color) !important;
+  color: var(--text-primary) !important;
+  background: var(--bg-card) !important;
+}
+
+[data-theme='dark'] .admin-table,
+[data-theme='dark'] .attendee-table,
+[data-theme='dark'] th,
+[data-theme='dark'] td {
+  border-color: var(--border-color) !important;
+  color: var(--text-secondary);
+}
+
+[data-theme='dark'] th,
+[data-theme='dark'] td strong {
+  color: var(--text-primary) !important;
+}
+
+[data-theme='dark'] .dialog-backdrop {
+  background: rgb(10 7 20 / 78%);
+}
+
+[data-theme='dark'] .cancellation-dialog,
+[data-theme='dark'] .confirmation-dialog {
+  border-color: var(--border-color);
+  color: var(--text-primary);
+  background: var(--bg-card);
+}
+
+[data-theme='dark'] .loader {
+  border-color: var(--border-color);
+  border-top-color: var(--color-primary-bright);
+}
+
+[data-theme='dark'] .status-pill,
+[data-theme='dark'] .event-status,
+[data-theme='dark'] .admin-account-status {
+  border-color: var(--border-color);
+  color: var(--text-primary) !important;
+  background: var(--color-surface-muted);
+}
+
+[data-theme='dark'] .status-pill--booked,
+[data-theme='dark'] .admin-account-status--active {
+  color: #9ff0c6 !important;
+  background: rgb(22 163 106 / 22%);
+}
+
+[data-theme='dark'] .status-pill--cancelled,
+[data-theme='dark'] .status-pill--payment_failed,
+[data-theme='dark'] .status-pill--expired,
+[data-theme='dark'] .admin-account-status--inactive {
+  color: #ffb4b4 !important;
+  background: rgb(220 38 38 / 20%);
+}
+
+[data-theme='dark'] .status-pill--pending_payment,
+[data-theme='dark'] .event-status--inactive,
+[data-theme='dark'] .event-status--completed,
+[data-theme='dark'] .event-status--sold-out {
+  color: #ffd58a !important;
+  background: rgb(245 158 11 / 20%);
+}
+
+[data-theme='dark'] .admin-alert,
+[data-theme='dark'] .admin-alert--error,
+[data-theme='dark'] .cancellation-success,
+[data-theme='dark'] .form-error {
+  color: var(--text-primary);
+  background: var(--bg-card);
+  border-color: var(--border-color);
+}
+
+.booking-page {
+  color: var(--text-primary);
+  background: var(--bg-primary);
+}
+
+.booking-event-card,
+.booking-checkout-card,
+.booking-confirmation {
+  border-color: var(--border-color);
+  background: var(--bg-card);
+}
+
+.booking-event-card__facts,
+.booking-event-card__facts .booking-event-card__address,
+.booking-summary--checkout div {
+  color: var(--text-secondary);
+}
+
+.booking-section-heading h2,
+.booking-event-card h2,
+.booking-summary--checkout strong,
+.booking-summary--checkout .booking-summary__total {
+  color: var(--text-primary);
+}
+
+.quantity-control {
+  border-color: var(--border-color);
+  background: var(--bg-card);
+}
+
+.quantity-control button {
+  color: var(--text-primary);
+  background: var(--color-surface-muted);
+}
+
+.booking-availability {
+  color: var(--color-primary);
+  background: var(--color-surface-muted);
+}
+
+.booking-summary--checkout,
+.booking-summary--checkout .booking-summary__total {
+  border-color: var(--border-color);
+}
+
+.booking-submit {
+  background: linear-gradient(120deg, var(--color-primary), var(--color-accent)) !important;
+}
+
+[data-theme='dark'] .booking-page {
+  color: var(--text-primary);
+  background: var(--bg-primary);
+}
+
+[data-theme='dark'] .booking-event-card,
+[data-theme='dark'] .booking-checkout-card,
+[data-theme='dark'] .booking-confirmation {
+  border-color: var(--border-color) !important;
+  background: var(--bg-card) !important;
+}
+
+[data-theme='dark'] .booking-event-card__facts,
+[data-theme='dark'] .booking-event-card__facts .booking-event-card__address,
+[data-theme='dark'] .booking-summary--checkout div {
+  color: var(--text-secondary) !important;
+}
+
+[data-theme='dark'] .booking-section-heading h2,
+[data-theme='dark'] .booking-event-card h2,
+[data-theme='dark'] .booking-summary--checkout strong,
+[data-theme='dark'] .booking-summary--checkout .booking-summary__total,
+[data-theme='dark'] .quantity-control strong {
+  color: var(--text-primary) !important;
+}
+
+[data-theme='dark'] .quantity-control {
+  border-color: var(--border-color) !important;
+  background: var(--bg-card) !important;
+}
+
+[data-theme='dark'] .quantity-control button {
+  color: var(--text-primary) !important;
+  background: var(--color-surface-muted) !important;
+}
+
+[data-theme='dark'] .booking-availability {
+  color: #d8c8ff !important;
+  background: #3d2c68 !important;
+}
+
+[data-theme='dark'] .booking-summary--checkout,
+[data-theme='dark'] .booking-summary--checkout .booking-summary__total {
+  border-color: var(--border-color) !important;
+}
+
+.admin-form--filters {
+  align-items: end;
+}
+
+.admin-form--filters select,
+.admin-form--filters input {
+  color: var(--text-primary);
+  border-color: var(--border-color);
+  background: var(--bg-card);
+}
+
+.admin-form--filters input::placeholder {
+  color: var(--text-secondary);
+}
+
+.admin-form--filters .primary-button {
+  background: linear-gradient(120deg, var(--color-primary), var(--color-accent));
+}
+
+.admin-table-wrap {
+  border-color: var(--border-color);
+  background: var(--bg-card);
+}
+
+.admin-table th,
+.admin-table td {
+  border-bottom-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+.admin-table th,
+.admin-table td:nth-child(2) span {
+  color: var(--text-secondary);
+}
+
+.admin-table tbody tr:hover {
+  background: var(--color-surface-muted);
+}
+
+[data-theme='dark'] .admin-form--filters select,
+[data-theme='dark'] .admin-form--filters input {
+  color-scheme: dark;
+}
+
+.attendee-filters .search-field,
+.attendee-filters .filter-field {
+  color: var(--text-secondary);
+}
+
+.attendee-filters .search-field input,
+.attendee-filters .filter-field select {
+  border-color: var(--border-color);
+  color: var(--text-primary);
+  background: var(--bg-card);
+}
+
+.attendee-filters .search-field input::placeholder {
+  color: var(--text-secondary);
+}
+
+.attendee-filters .primary-button {
+  background: linear-gradient(120deg, var(--color-primary), var(--color-accent));
+}
+
+.attendee-table-wrap {
+  border-color: var(--border-color);
+  background: var(--bg-card);
+}
+
+.attendee-table th {
+  color: var(--text-primary);
+  background: var(--color-surface-muted);
+}
+
+.attendee-table td {
+  color: var(--text-primary);
+  border-bottom-color: var(--border-color);
+}
+
+.attendee-table td:first-child span {
+  color: var(--text-secondary);
+}
+
+.attendee-table tbody tr:hover {
+  background: var(--color-surface-muted);
+}
+
+[data-theme='dark'] .attendee-filters .search-field input::placeholder {
+  color: #a99ebb;
+}
+
+[data-theme='dark'] .attendee-table {
+  background: #252039;
+}
+
+[data-theme='dark'] .attendee-table th {
+  color: #ffffff !important;
+  background: #211a32;
+}
+
+[data-theme='dark'] .attendee-table td {
+  color: #ffffff !important;
+  border-bottom-color: #39314f !important;
+}
+
+[data-theme='dark'] .attendee-table td:first-child span {
+  color: #c7bed5 !important;
+}
+
+[data-theme='dark'] .attendee-table tbody tr:hover {
+  background: #302644;
+}
+
+.event-details-card__visual {
+  overflow: hidden;
+  background: linear-gradient(135deg, #6d28d9, #ec4899);
+}
+
+.event-details-card__visual img {
+  width: 100%;
+  height: 100%;
+  min-height: 500px;
+  object-fit: cover;
+}
+
+.event-details-card__visual--technical,
+.event-details-card__visual--tech {
+  background: linear-gradient(135deg, #312e81, #2563eb);
+}
+
+.event-details-card__visual--cultural,
+.event-details-card__visual--music {
+  background: linear-gradient(135deg, #9d174d, #f97316);
+}
+
+.event-details-card__visual--workshop {
+  background: linear-gradient(135deg, #115e59, #14b8a6);
+}
+
+.event-details-card__visual--sports,
+.event-details-card__visual--sport {
+  background: linear-gradient(135deg, #166534, #84cc16);
+}
+
+.event-details__venue {
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  background: var(--bg-card);
+}
+
+.event-details__venue strong {
+  color: var(--text-primary);
+}
+
+.event-details__footer {
+  border-top-color: var(--border-color);
+}
+
+.event-details__footer small {
+  color: var(--text-secondary);
+}
+
+.event-details__footer strong {
+  color: var(--text-primary);
+}
+
+.booking-action {
+  color: #ffffff;
+  background: linear-gradient(120deg, #6d28d9, #ec4899);
+}
+
+.booking-action:hover:not(:disabled) {
+  filter: brightness(1.08);
+  box-shadow: 0 10px 24px rgb(109 40 217 / 30%);
+}
+
+.booking-action:disabled {
+  color: var(--text-secondary);
+  background: var(--color-surface-muted);
+}
+
+[data-theme='dark'] .event-details-card__visual {
+  background: linear-gradient(135deg, #4c1d95, #be185d);
+}
+
+[data-theme='dark'] .event-details__venue {
+  border-color: #39314f;
+  color: #c7bed5 !important;
+  background: #252039 !important;
+}
+
+[data-theme='dark'] .event-details__venue strong {
+  color: #ffffff !important;
+}
+
+[data-theme='dark'] .event-details__footer {
+  border-top-color: #39314f;
+}
+
+[data-theme='dark'] .event-details__footer small {
+  color: #c7bed5 !important;
+}
+
+[data-theme='dark'] .event-details__footer strong {
+  color: #ffffff !important;
+}
+
+[data-theme='dark'] .booking-action:disabled {
+  color: #a99ebb;
+  background: #30284a;
 }

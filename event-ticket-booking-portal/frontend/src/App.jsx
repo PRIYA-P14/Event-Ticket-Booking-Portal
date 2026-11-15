@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react'
 import { ArrowRight, CalendarDays, Ticket, Users } from 'lucide-react'
 import { BrowserRouter, Link, Route, Routes } from 'react-router-dom'
+import { Toaster } from 'react-hot-toast'
 import EventCard from './components/EventCard'
 import BookingDetailsPage from './pages/BookingDetailsPage'
 import { AuthProvider } from './context/AuthContext.jsx'
-import { useAuth } from './context/authContext'
-import { rolePath } from './context/routeUtils'
+import { ThemeProvider } from './context/ThemeProvider'
 import { ProtectedRoute } from './components/ProtectedRoute'
 import BookingPreparationPage from './pages/BookingPreparationPage'
 import EventDetailsPage from './pages/EventDetailsPage'
@@ -18,11 +18,11 @@ import RolePlaceholderPage from './pages/RolePlaceholderPage'
 import OrganizerDashboard from './pages/OrganizerDashboard'
 import AttendeeListPage from './pages/AttendeeListPage'
 import AdminDashboard from './pages/AdminDashboard'
+import SiteNavigation from './components/SiteNavigation'
 import { getUpcomingEvents } from './lib/eventApi'
 import './App.css'
 
 function LandingPage() {
-  const { isAuthenticated, user, signOut } = useAuth()
   const [events, setEvents] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState('')
@@ -55,22 +55,7 @@ function LandingPage() {
           <span className="brand__mark">E</span>
           <span>Eventra</span>
         </a>
-        <nav className="site-nav" aria-label="Main navigation">
-          <a className="site-nav__active" href="#home">Home</a>
-          <Link to="/events">Events</Link>
-          {isAuthenticated ? (
-            <>
-              {user?.role === 'ATTENDEE' && <Link to="/bookings">My Bookings</Link>}
-              <Link to={rolePath(user?.role)}>Account</Link>
-              <button type="button" className="nav-button" onClick={signOut}>Log out</button>
-            </>
-          ) : (
-            <>
-              <Link to="/login">Login</Link>
-              <Link className="nav-cta" to="/register">Register <ArrowRight size={15} aria-hidden="true" /></Link>
-            </>
-          )}
-        </nav>
+        <SiteNavigation active="home" />
       </header>
 
       <main>
@@ -143,8 +128,10 @@ function HomePage() {
 function App() {
   return (
     <BrowserRouter>
-      <AuthProvider>
-        <Routes>
+      <ThemeProvider>
+        <AuthProvider>
+          <Toaster position="top-right" />
+          <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/events" element={<EventsPage />} />
           <Route path="/events/:eventId" element={<EventDetailsPage />} />
@@ -164,10 +151,12 @@ function App() {
           </Route>
           <Route element={<ProtectedRoute roles={['ADMIN']} />}>
             <Route path="/admin" element={<AdminDashboard />} />
+            <Route path="/admin/events" element={<AdminDashboard />} />
           </Route>
           <Route path="*" element={<HomePage />} />
-        </Routes>
-      </AuthProvider>
+          </Routes>
+        </AuthProvider>
+      </ThemeProvider>
     </BrowserRouter>
   )
 }

@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react'
-import { ArrowLeft, CalendarDays, Clock3, MapPin, Ticket, Users } from 'lucide-react'
+import { CalendarDays, Clock3, Cpu, GraduationCap, MapPin, Music2, Ticket, Trophy, Users } from 'lucide-react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useAuth } from '../context/authContext'
+import BackButton from '../components/BackButton'
+import SiteNavigation from '../components/SiteNavigation'
 import { getEvent } from '../lib/eventApi'
 import { formatCurrency, formatDate, formatTime } from '../lib/eventFormatters'
 
@@ -12,6 +14,7 @@ function EventDetailsPage() {
   const [event, setEvent] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState('')
+  const [failedCoverImage, setFailedCoverImage] = useState('')
 
   useEffect(() => {
     let isMounted = true
@@ -34,6 +37,25 @@ function EventDetailsPage() {
   const isUpcoming = event ? new Date(event.startAt) > new Date() : false
   const canBook = Boolean(event && isUpcoming && event.isActive && event.seatsLeft > 0)
   const isAttendee = isAuthenticated && user?.role === 'ATTENDEE'
+  const coverImage = event?.coverImage || event?.imageUrl || event?.image
+  const categoryName = event?.categoryId?.name || 'Event'
+  const categoryKey = categoryName.toLowerCase()
+  const visualKey = categoryKey.includes('technical') || categoryKey.includes('tech')
+    ? 'technical'
+    : categoryKey.includes('cultural') || categoryKey.includes('music')
+      ? 'cultural'
+      : categoryKey.includes('workshop')
+        ? 'workshop'
+        : categoryKey.includes('sport')
+          ? 'sports'
+          : 'default'
+  const CategoryIcon = {
+    technical: Cpu,
+    cultural: Music2,
+    workshop: GraduationCap,
+    sports: Trophy,
+    default: Ticket,
+  }[visualKey]
 
   const handleBooking = () => {
     if (!isAuthenticated) {
@@ -50,21 +72,27 @@ function EventDetailsPage() {
         <Link className="brand" to="/" aria-label="Eventra home">
           <span className="brand__mark">E</span><span>Eventra</span>
         </Link>
-        <nav className="site-nav" aria-label="Main navigation">
-          <Link to="/">Home</Link>
-          <Link className="site-nav__active" to="/events">Events</Link>
-          <Link to="/login">Login</Link>
-          <Link className="nav-cta" to="/register">Register <ArrowLeft size={15} aria-hidden="true" /></Link>
-        </nav>
+        <SiteNavigation active="events" />
       </header>
 
       <main className="event-details-page">
-        <Link className="back-link back-link--light" to="/events"><ArrowLeft size={16} /> Back to all events</Link>
+        <BackButton fallback="/events" />
         {isLoading && <div className="state-card"><div className="loader" />Loading event details...</div>}
         {!isLoading && error && <div className="state-card state-card--error" role="alert">{error}</div>}
         {!isLoading && !error && event && (
           <article className="event-details-card">
-            <div className="event-details-card__visual"><Ticket size={68} strokeWidth={1} aria-hidden="true" /></div>
+            <div className={`event-details-card__visual${coverImage && failedCoverImage !== coverImage ? ' event-details-card__visual--image' : ` event-details-card__visual--${visualKey}`}`}>
+              {coverImage && failedCoverImage !== coverImage ? (
+                <img
+                  src={coverImage}
+                  alt={`${event.title} event cover`}
+                  loading="lazy"
+                  onError={() => setFailedCoverImage(coverImage)}
+                />
+              ) : (
+                <CategoryIcon size={68} strokeWidth={1} aria-hidden="true" />
+              )}
+            </div>
             <div className="event-details-card__body">
               <p className="eyebrow">{event.categoryId?.name || 'Event'}</p>
               <h1>{event.title}</h1>

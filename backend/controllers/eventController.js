@@ -161,6 +161,47 @@ const deactivateEvent = async (req, res, next) => {
   }
 };
 
+const activateEvent = async (req, res, next) => {
+  try {
+    const { eventId } = parseOrThrow(eventIdSchema, req.params);
+    const event = await getByIdOrThrow(Event, eventId, 'Event');
+    await validateReferences({
+      organizerId: event.organizerId,
+      venueId: event.venueId,
+      categoryId: event.categoryId,
+    });
+    if (event.startAt <= new Date()) {
+      const error = new Error('Only upcoming events can be activated');
+      error.statusCode = 409;
+      throw error;
+    }
+    const venue = await Venue.findById(event.venueId).select('capacity');
+    if (event.seatLimit > venue.capacity) {
+      const error = new Error('Event seat limit exceeds the venue capacity');
+      error.statusCode = 409;
+      throw error;
+    }
+    if (event.ticketsBooked > event.seatLimit) {
+      const error = new Error('Event has more reserved tickets than its seat limit');
+      error.statusCode = 409;
+      throw error;
+    }
+    const activatedEvent = await Event.findByIdAndUpdate(
+      eventId,
+      { isActive: true },
+      { returnDocument: 'after', runValidators: true }
+    );
+    const populatedEvent = await populateEvent(Event.findById(activatedEvent._id));
+    return res.json({
+      success: true,
+      message: 'Event activated successfully',
+      event: addSeatsLeft(populatedEvent),
+    });
+  } catch (error) {
+    return next(error);
+  }
+};
+
 const listPublicEvents = async (req, res, next) => {
   try {
     const query = parseOrThrow(listEventsQuerySchema, req.query);
@@ -218,6 +259,7 @@ module.exports = {
   getAdminEvents,
   updateEvent,
   deactivateEvent,
+  activateEvent,
   listPublicEvents,
   getPublicEvent,
 };

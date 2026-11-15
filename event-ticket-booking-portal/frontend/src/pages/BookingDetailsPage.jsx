@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useState } from 'react'
-import { AlertTriangle, ArrowLeft, ArrowRight, CalendarDays, Clock3, MapPin, Ticket, Users, X } from 'lucide-react'
-import { Link, useNavigate, useParams } from 'react-router-dom'
+import { AlertTriangle, ArrowRight, CalendarDays, Clock3, MapPin, Ticket, Users, X } from 'lucide-react'
+import { useNavigate, useParams } from 'react-router-dom'
 import { useAuth } from '../context/authContext'
+import BackButton from '../components/BackButton'
 import { cancelBooking, getBookingDetails } from '../lib/bookingApi'
 import { getPaymentStatus } from '../lib/paymentApi'
 import { formatCurrency, formatDate, formatTime } from '../lib/eventFormatters'
@@ -117,7 +118,7 @@ function BookingDetailsPage() {
         <section className="state-card state-card--error" role="alert">
           <h1>Booking unavailable</h1>
           <p>{error || 'This booking could not be found.'}</p>
-          <Link className="text-link" to="/bookings"><ArrowLeft size={16} /> Back to my bookings</Link>
+          <BackButton fallback="/bookings" />
         </section>
       </main>
     )
@@ -130,7 +131,7 @@ function BookingDetailsPage() {
 
   return (
     <main className="booking-details-page">
-      <Link className="back-link back-link--light" to="/bookings"><ArrowLeft size={16} /> Back to my bookings</Link>
+      <BackButton fallback="/bookings" />
       {cancellationMessage && <div className="cancellation-success" role="status">{cancellationMessage}</div>}
       <section className="booking-details-card">
         <div className="booking-details-card__header">

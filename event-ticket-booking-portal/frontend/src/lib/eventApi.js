@@ -56,3 +56,8 @@ export const deactivateAdminEvent = async (accessToken, eventId) => {
   const { data } = await api.patch(`/events/${eventId}/deactivate`, {}, { headers: { Authorization: `Bearer ${accessToken}` } })
   return data.event
 }
+
+export const activateAdminEvent = async (accessToken, eventId) => {
+  const { data } = await api.patch(`/events/${eventId}/activate`, {}, { headers: { Authorization: `Bearer ${accessToken}` } })
+  return data.event
+}

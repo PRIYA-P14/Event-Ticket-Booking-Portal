@@ -1,17 +1,24 @@
-import { useState } from 'react'
-import { Eye, EyeOff, ArrowLeft, ArrowRight } from 'lucide-react'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { Eye, EyeOff, ArrowRight } from 'lucide-react'
+import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/authContext'
 import { rolePath } from '../context/routeUtils'
+import BackButton from '../components/BackButton'
+import ThemeToggle from '../components/ThemeToggle'
 
 function LoginPage() {
   const navigate = useNavigate()
-  const location = useLocation()
-  const { signIn } = useAuth()
+  const { isAuthenticated, isLoading, signIn, user } = useAuth()
   const [form, setForm] = useState({ email: '', password: '' })
   const [showPassword, setShowPassword] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState('')
+
+  useEffect(() => {
+    if (!isLoading && isAuthenticated && user) {
+      navigate(rolePath(user.role), { replace: true })
+    }
+  }, [isAuthenticated, isLoading, navigate, user])
 
   const handleSubmit = async (event) => {
     event.preventDefault()
@@ -24,7 +31,7 @@ function LoginPage() {
     setIsSubmitting(true)
     try {
       const user = await signIn(form)
-      navigate(location.state?.from || rolePath(user.role), { replace: true })
+      navigate(rolePath(user.role), { replace: true })
     } catch (requestError) {
       setError(requestError.response?.data?.message || 'Unable to sign in. Please try again.')
     } finally {
@@ -35,13 +42,16 @@ function LoginPage() {
   return (
     <main className="auth-page">
       <section className="auth-panel auth-panel--intro">
-        <Link className="brand" to="/"><span className="brand__mark">E</span><span>Eventra</span></Link>
+        <div className="auth-panel__top">
+          <Link className="brand" to="/"><span className="brand__mark">E</span><span>Eventra</span></Link>
+          <ThemeToggle />
+        </div>
+        <BackButton fallback="/" light={false} />
         <div>
           <p className="eyebrow">Welcome back</p>
           <h1>Your next<br /><span>moment awaits.</span></h1>
           <p>Sign in to discover events, manage bookings, and keep every plan in one place.</p>
         </div>
-        <Link className="back-link" to="/"><ArrowLeft size={16} /> Back to home</Link>
       </section>
       <section className="auth-panel auth-panel--form">
         <div className="auth-form-wrap">

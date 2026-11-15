@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from 'react'
-import { ArrowLeft, ArrowRight, CalendarDays, Clock3, MapPin, Minus, Plus, Ticket, Users } from 'lucide-react'
+import { ArrowRight, CalendarDays, Clock3, MapPin, Minus, Plus, Ticket, Users } from 'lucide-react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../context/authContext'
+import BackButton from '../components/BackButton'
 import { getEvent } from '../lib/eventApi'
 import { createBooking } from '../lib/bookingApi'
 import { formatCurrency, formatDate, formatTime } from '../lib/eventFormatters'
@@ -12,6 +13,7 @@ function BookingConfirmation({ booking }) {
 
   return (
     <main className="booking-page">
+      <BackButton fallback="/events" />
       <section className="booking-confirmation">
         <div className="booking-confirmation__mark"><Ticket size={30} aria-hidden="true" /></div>
         <p className="eyebrow">Reservation created</p>
@@ -134,7 +136,7 @@ function BookingPreparationPage() {
         <section className="booking-error state-card state-card--error" role="alert">
           <h1>Unable to start booking</h1>
           <p>{error}</p>
-          <Link className="text-link" to="/events"><ArrowLeft size={16} /> Back to events</Link>
+          <BackButton fallback="/events" />
         </section>
       </main>
     )
@@ -142,8 +144,8 @@ function BookingPreparationPage() {
 
   return (
     <main className="booking-page">
+      <BackButton fallback="/events" />
       <div className="booking-page__top">
-        <Link className="back-link back-link--light" to={`/events/${eventId}`}><ArrowLeft size={16} /> Back to event</Link>
         <p className="eyebrow">Secure reservation</p>
         <h1>Book your tickets</h1>
       </div>

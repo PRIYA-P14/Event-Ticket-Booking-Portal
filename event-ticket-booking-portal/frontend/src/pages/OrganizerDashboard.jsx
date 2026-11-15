@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react'
 import { ArrowRight, CalendarDays, Ticket, Users } from 'lucide-react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import { toast } from 'react-hot-toast'
 import { useAuth } from '../context/authContext'
 import { getOrganizerDashboard } from '../lib/organizerApi'
 import { formatCurrency, formatDate, formatTime } from '../lib/eventFormatters'
+import ThemeToggle from '../components/ThemeToggle'
 
 const getEventStatus = (event) => {
   if (!event.isActive) return 'Inactive'
@@ -13,10 +15,22 @@ const getEventStatus = (event) => {
 }
 
 function OrganizerDashboard() {
-  const { accessToken, user } = useAuth()
+  const { accessToken, user, signOut } = useAuth()
+  const navigate = useNavigate()
   const [dashboard, setDashboard] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState('')
+
+  const handleLogout = async () => {
+    try {
+      await signOut()
+      toast.success('Logged out successfully.')
+    } catch {
+      toast.success('Your session was cleared locally.')
+    } finally {
+      navigate('/login', { replace: true })
+    }
+  }
 
   useEffect(() => {
     let isMounted = true
@@ -43,13 +57,21 @@ function OrganizerDashboard() {
   return (
     <main className="organizer-page">
       <header className="organizer-page__header">
-        <div>
+        <Link className="brand" to="/" aria-label="Eventra home">
+          <span className="brand__mark">E</span>
+          <span>Eventra</span>
+        </Link>
+        <div className="organizer-header-actions">
+          <button className="secondary-button" type="button" onClick={handleLogout}>Logout</button>
+          <ThemeToggle />
+        </div>
+      </header>
+
+      <div className="organizer-page__intro">
           <p className="eyebrow">Organizer dashboard</p>
           <h1>Welcome, {user?.name}.</h1>
           <p>Manage your assigned events and keep track of your attendees.</p>
-        </div>
-        <Link className="secondary-button" to="/events">Browse public events <ArrowRight size={16} /></Link>
-      </header>
+      </div>
 
       <section className="organizer-stats" aria-label="Organizer summary">
         <div className="organizer-stat"><CalendarDays size={21} /><span>Assigned events</span><strong>{summary.totalAssignedEvents}</strong></div>
@@ -58,8 +80,8 @@ function OrganizerDashboard() {
         <div className="organizer-stat"><Users size={21} /><span>Available seats</span><strong>{summary.totalAvailableSeats}</strong></div>
       </section>
 
-      <section className="organizer-events-section">
-        <div className="section-heading"><div><p className="eyebrow">Your events</p><h2>Assigned events</h2></div></div>
+      <section className="organizer-events-section" id="events">
+        <div className="section-heading" id="attendees"><div><p className="eyebrow">Your events</p><h2>Assigned events</h2></div></div>
         {dashboard.events.length === 0 ? (
           <div className="state-card">No events have been assigned to you yet.</div>
         ) : (

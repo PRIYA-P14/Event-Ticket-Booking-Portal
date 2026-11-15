@@ -1,6 +1,7 @@
 const { z } = require('zod');
 
 const objectId = z.string().regex(/^[a-f\d]{24}$/i, 'A valid MongoDB ObjectId is required');
+const phone = z.string().trim().regex(/^\+?[1-9]\d{9,14}$/, 'A valid phone number is required');
 const password = z.string()
   .min(8, 'Password must be at least 8 characters')
   .regex(/[a-z]/, 'Password must contain a lowercase letter')
@@ -10,9 +11,16 @@ const password = z.string()
 const organizerSchema = z.object({
   name: z.string().trim().min(2).max(100),
   email: z.string().trim().toLowerCase().email(),
-  phone: z.string().trim().min(10).max(16),
+  phone,
   password,
 }).strict();
+const organizerUpdateSchema = z.object({
+  name: z.string().trim().min(2).max(100).optional(),
+  email: z.string().trim().toLowerCase().email().optional(),
+  phone: phone.optional(),
+}).strict().refine((value) => Object.keys(value).length > 0, {
+  message: 'At least one organizer field is required',
+});
 
 const idSchema = z.object({ id: objectId });
 const venueSchema = z.object({
@@ -33,6 +41,9 @@ const bookingQuerySchema = z.object({
   to: z.string().date().optional(),
   page: z.coerce.number().int().min(1).default(1),
   limit: z.coerce.number().int().min(1).max(100).default(20),
+}).refine((value) => !value.from || !value.to || value.from <= value.to, {
+  message: 'From date must not be later than To date',
+  path: ['to'],
 });
 
 const parseOrThrow = (schema, input) => {
@@ -47,6 +58,7 @@ const parseOrThrow = (schema, input) => {
 
 module.exports = {
   organizerSchema,
+  organizerUpdateSchema,
   idSchema,
   venueSchema,
   categorySchema,
