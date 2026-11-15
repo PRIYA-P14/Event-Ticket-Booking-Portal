@@ -15,6 +15,8 @@ import MyBookingsPage from './pages/MyBookingsPage'
 import PendingBookingPage from './pages/PendingBookingPage'
 import RegisterPage from './pages/RegisterPage'
 import RolePlaceholderPage from './pages/RolePlaceholderPage'
+import OrganizerDashboard from './pages/OrganizerDashboard'
+import AttendeeListPage from './pages/AttendeeListPage'
 import { getUpcomingEvents } from './lib/eventApi'
 import './App.css'
 
@@ -156,7 +158,8 @@ function App() {
             <Route path="/attendee" element={<RolePlaceholderPage />} />
           </Route>
           <Route element={<ProtectedRoute roles={['ORGANIZER']} />}>
-            <Route path="/organizer" element={<RolePlaceholderPage />} />
+            <Route path="/organizer" element={<OrganizerDashboard />} />
+            <Route path="/organizer/events/:eventId/attendees" element={<AttendeeListPage />} />
           </Route>
           <Route element={<ProtectedRoute roles={['ADMIN']} />}>
             <Route path="/admin" element={<RolePlaceholderPage />} />

@@ -11,6 +11,7 @@ const authRoutes = require('./routes/authRoutes');
 const bookingRoutes = require('./routes/bookingRoutes');
 const eventRoutes = require('./routes/eventRoutes');
 const paymentRoutes = require('./routes/paymentRoutes');
+const organizerRoutes = require('./routes/organizerRoutes');
 const testRoutes = require('./routes/testRoutes');
 
 const app = express();
@@ -50,6 +51,7 @@ app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/events', eventRoutes);
 app.use('/api/v1/bookings', bookingRoutes);
 app.use('/api/v1/payments', paymentRoutes);
+app.use('/api/v1/organizer', organizerRoutes);
 if (process.env.NODE_ENV !== 'production') {
   app.use('/api/v1/test', testRoutes);
 }
